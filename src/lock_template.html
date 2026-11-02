@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Генератор ТУ — вход</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--acc:#2f6fdd;--ink:#1c2128;--line:#d3d7de}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:grid;place-items:center;background:#5b6370;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);padding:16px}
+form{background:#fff;border-radius:12px;padding:28px 26px;width:100%;max-width:360px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+h1{font-size:18px;margin:0 0 4px}
+p{margin:0 0 18px;color:#666;font-size:13px}
+input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:7px;font:inherit;font-size:16px}
+input[type=password]:focus{outline:2px solid var(--acc);outline-offset:-1px}
+label{display:flex;gap:8px;align-items:center;margin:12px 0 16px;font-size:13px;color:#444}
+button{width:100%;padding:11px;border:0;border-radius:7px;background:var(--acc);color:#fff;font:600 14px inherit;cursor:pointer}
+button:disabled{opacity:.6}
+#err{color:#b42318;font-size:13px;min-height:20px;margin-top:10px}
+</style></head>
+<body>
+<form id="f" autocomplete="on">
+ <h1>Генератор ТУ</h1>
+ <p>ОсОО «Электро Комфорт». Введите код доступа.</p>
+ <input type="password" id="c" autocomplete="current-password" placeholder="Код доступа" autofocus>
+ <label><input type="checkbox" id="r" checked> Запомнить на этом устройстве</label>
+ <button id="b">Открыть</button>
+ <div id="err"></div>
+</form>
+<script>
+const BLOB=/*BLOB*/;
+const u8=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function open_(code){
+ const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(code.trim()),"PBKDF2",false,["deriveKey"]);
+ const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:u8(BLOB.s),iterations:BLOB.n,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+ const gz=await crypto.subtle.decrypt({name:"AES-GCM",iv:u8(BLOB.i)},key,u8(BLOB.d));
+ const html=await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+ document.open();document.write(html);document.close();}
+const f=document.getElementById("f"),b=document.getElementById("b"),err=document.getElementById("err");
+f.onsubmit=async e=>{e.preventDefault();const code=document.getElementById("c").value;if(!code)return;const keep=document.getElementById("r").checked;b.disabled=true;b.textContent="Открываю…";err.textContent="";
+ try{await open_(code);try{if(keep)localStorage.setItem("tu_code",code);}catch(_){}}
+ catch(_){b.disabled=false;b.textContent="Открыть";err.textContent="Неверный код.";}};
+(async()=>{let c=null;try{c=localStorage.getItem("tu_code");}catch(_){}if(!c)return;b.disabled=true;b.textContent="Открываю…";
+ try{await open_(c);}catch(_){try{localStorage.removeItem("tu_code");}catch(__){}b.disabled=false;b.textContent="Открыть";}})();
+</script>
+</body></html>

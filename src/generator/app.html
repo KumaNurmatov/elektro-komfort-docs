@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<title>Генератор ТУ</title>
+<style>
+@font-face{font-family:ISO;src:url(data:font/woff2;base64,/*FONT*/) format('woff2');font-display:block}
+:root{--bg:#5b6370;--panel:#f4f5f7;--line:#d3d7de;--ink:#1c2128;--acc:#2f6fdd;--auto:#eef4ff;--warn:#fff4d6;--warnbd:#e8c25c;--ok:#e7f6ec}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+#app{display:flex;height:100vh}
+#panel{width:380px;flex:0 0 380px;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line);min-height:0}
+#phead{padding:12px 14px 0}
+#phead h1{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+#tabs{display:flex;gap:4px}
+#tabs button{flex:1;padding:7px;border-radius:6px 6px 0 0;border-bottom:none;background:#e6e8ec}
+#tabs button.on{background:#fff;color:var(--ink)}
+#pbody{flex:1;overflow:auto;padding:10px 14px 16px;background:#fff;border-top:1px solid var(--line)}
+#pfoot{padding:10px 14px;border-top:1px solid var(--line);display:flex;gap:8px;background:var(--panel)}
+fieldset{border:1px solid var(--line);border-radius:7px;margin:0 0 12px;padding:6px 10px 10px;background:#fff}
+legend{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.04em;padding:0 4px}
+label{display:block;margin:6px 0}
+label>span{display:flex;align-items:center;gap:4px;font-size:11.5px;color:#555;margin-bottom:3px}
+label>span .rs{margin-left:auto;border:0;background:none;color:var(--acc);font-size:11px;padding:0;cursor:pointer;flex:none;font-weight:500}
+label>span .rs:hover{text-decoration:underline}
+input,select,textarea{width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:5px;font:13px inherit;background:#fff;color:var(--ink)}
+input.auto,select.auto{background:var(--auto);border-color:#c9d8f5}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.g2>label,.g3>label{margin:6px 0}
+.iso{display:grid;grid-template-columns:28px 1fr 1fr;gap:4px 6px;align-items:center;font-size:12px}
+.iso b{font-weight:600;color:#555}
+.iso .h{font-size:11px;color:#777}
+button{padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font:600 12.5px inherit;cursor:pointer;color:var(--ink)}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button.sm{padding:4px 8px;font-size:11.5px;font-weight:500}
+button:hover{filter:brightness(.96)}
+button:disabled{opacity:.45;cursor:default}
+.hint{font-size:11px;color:#777;line-height:1.5;margin:4px 0}
+.note{font-size:12px;border-radius:7px;padding:8px 10px;margin:0 0 10px;line-height:1.45}
+.note.warn{background:var(--warn);border:1px solid var(--warnbd)}
+.note.ok{background:var(--ok);border:1px solid #9fd3b0}
+.note button{margin-top:6px}
+details{border:1px solid var(--line);border-radius:7px;margin:0 0 12px;background:#fff}
+details summary{padding:7px 10px;font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+details .in{padding:0 10px 10px}
+.wxs{font-size:11.5px;color:#555;margin:2px 0 0}
+#jsearch{margin-bottom:8px}
+.jr{border:1px solid var(--line);border-radius:7px;padding:7px 9px;margin:0 0 6px;cursor:pointer;background:#fff}
+.jr:hover{border-color:#9aa3af}
+.jr.cur{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.jr .t{display:flex;gap:8px;font-weight:600}
+.jr .t .n{color:var(--acc);white-space:nowrap}
+.jr .t .d{margin-left:auto;color:#777;font-weight:400;white-space:nowrap}
+.jr .s{font-size:11.5px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jtools{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap}
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+#bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#3f4651;color:#fff;flex-wrap:wrap}
+#bar .seg{display:flex;border:1px solid #6b7480;border-radius:6px;overflow:hidden}
+#bar .seg button{border:0;border-radius:0;background:transparent;color:#dfe3ea;font-weight:500}
+#bar .seg button.on{background:#dfe3ea;color:#1c2128}
+#bar .sp{flex:1}
+#bar button.out{background:#fff}
+#sheets{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.grp{display:flex;flex-direction:column;align-items:center;gap:14px}
+.ghead{color:#dfe3ea;font-size:12px;align-self:stretch;text-align:center;letter-spacing:.04em}
+.page{width:210mm;height:297mm;background:#fff;position:relative;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.35);flex:0 0 auto}
+.page>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pnum{position:absolute;left:0;bottom:-15px;font-size:10px;color:#dfe3ea}
+body[data-view=proj] #gR,body[data-view=prot] #gP{height:0;overflow:hidden;visibility:hidden;margin-top:-14px}
+text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
+.isoup{font-family:ISO;font-style:normal}
+.times{font-family:'Times New Roman',serif;font-style:normal}
+.arial{font-family:Arial,Helvetica,sans-serif;font-style:normal}
+#meas{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+@media print{
+  @page{size:A4;margin:0}
+  html,body{height:auto;background:#fff}
+  #app{display:block;height:auto}
+  #panel,#bar,.pnum,.ghead{display:none!important}
+  #main{display:block}
+  #sheets{padding:0;gap:0;display:block;overflow:visible}
+  .grp{display:block}
+  #gP,#gR{height:auto!important;overflow:visible!important;visibility:visible!important;margin:0!important}
+  body[data-print=proj] #gR,body[data-print=prot] #gP{display:none!important}
+  body[data-print=all] #gP,body[data-print=all] #gR{display:block!important}
+  .page{box-shadow:none;margin:0;break-after:page;page-break-after:always}
+  .page.lastp{break-after:auto;page-break-after:auto}
+}
+</style></head>
+<body data-view="proj">
+<div id="app">
+<aside id="panel">
+ <div id="phead"><h1>Генератор ТУ <span class="hint" style="margin:0;font-weight:400">проект + протокол</span></h1>
+  <div id="tabs"><button data-tab="form" class="on">Новый ТУ</button><button data-tab="jour">Журнал</button></div></div>
+ <div id="pbody">
+  <div id="tabForm">
+   <div id="notes"></div>
+   <fieldset><legend>Из технических условий</legend>
+    <div class="g2"><label><span>№ ТУ (исх.)</span><input data-f="tu" placeholder="565/10б"></label>
+     <label><span>Дата ТУ</span><input data-f="tud" type="date"></label></div>
+    <label><span>Кем выданы</span><input data-f="org" list="orgs"></label>
+    <label><span>Заказчик — как в ТУ («На запрос: …»)</span><input data-f="custRaw" placeholder="Иванова А.Б."></label>
+    <label><span>Заказчик в документах (им. падеж)</span><input data-f="cust"></label>
+    <div class="hint" id="genderHint"></div>
+    <label><span>Объект</span><input data-f="obj" list="objs"></label>
+    <label><span>Адрес</span><input data-f="addr" placeholder="с. Примерное, ул. Центральная 1"></label>
+    <div class="g2"><label><span>Район</span><input data-f="dist" list="dists"></label>
+     <label><span>Мощность, кВт</span><input data-f="kw" inputmode="decimal"></label></div>
+    <div class="g2"><label><span>Подключение (как в ТУ)</span><select data-f="conn"><option value="ВЛ">от ВЛ-0,4 кВ</option><option value="РУ">от РУ-0,4 кВ ТП</option></select></label>
+     <label><span>Точка: фидер, опора, ТП</span><input data-f="tp" placeholder="ф-1 опора №5 ТП-П000"></label></div>
+   </fieldset>
+   <fieldset><legend>Кабель</legend>
+    <div class="g3"><label><span>Марка</span><input data-f="cable" list="cables"></label>
+     <label><span>Сечение</span><input data-f="sect" list="sects"></label>
+     <label><span>Длина, м</span><input data-f="len" inputmode="decimal"></label></div>
+    <div class="hint">Длина одна на плане (л. 5), в спецификации (л. 11) и в протоколе. Если в ТУ её нет — ставится 25–30 м. <button class="sm" id="lenDice" type="button">🎲 другая</button></div>
+   </fieldset>
+   <fieldset><legend>Протокол</legend>
+    <div class="g2"><label><span>Дата (ТУ + 1 день)</span><input data-f="prDate" type="date"></label>
+     <label><span>№ К (З = следующий)</span><input data-f="numK" inputmode="numeric"></label></div>
+    <div class="hint" id="numHint"></div>
+    <label><span>Объект в протоколе</span><input data-f="prObj"></label>
+    <label><span>Адрес в протоколе</span><input data-f="prAddr"></label>
+    <div class="g3"><label><span>t воздуха, °C</span><input data-f="tAir" inputmode="numeric"></label>
+     <label><span>Небо</span><select data-f="sky"><option>ясно</option><option>пасмурно</option></select></label>
+     <label><span>Макс. за 10 дн.</span><input data-f="w10" inputmode="numeric"></label></div>
+    <div class="wxs" id="wxStatus"></div><button class="sm" id="wxBtn" type="button">Подтянуть погоду ещё раз</button>
+    <div style="margin-top:10px" class="iso"><span></span><span class="h">до испытания</span><span class="h">после</span>
+     <b>A</b><input data-f="rA1"><input data-f="rA2"><b>B</b><input data-f="rB1"><input data-f="rB2"><b>C</b><input data-f="rC1"><input data-f="rC2"></div>
+    <div class="hint">Изоляция 782–809 МОм, заземление 25/26/25. <button class="sm" id="isoDice" type="button">🎲 другие</button></div>
+   </fieldset>
+   <fieldset><legend>Автоматы, А (по мощности)</legend>
+    <div class="g3"><label><span>Вводной</span><input data-f="amp1"></label><label><span>Второй</span><input data-f="amp2"></label><label><span>Третий</span><input data-f="amp3"></label></div>
+   </fieldset>
+   <details id="constBox"><summary>Постоянные данные (обычно не меняются)</summary><div class="in" id="consts"></div></details>
+   <div class="hint">Голубые поля заполняются сами по правилам. Если поправить вручную — поле станет белым, «авто» вернёт расчёт.</div>
+  </div>
+  <div id="tabJour" hidden>
+   <input id="jsearch" placeholder="Поиск: фамилия, адрес, № ТУ или протокола">
+   <div id="jlist"></div>
+   <div class="jtools"><button class="sm" id="jExport">Скачать журнал (.json)</button><button class="sm" id="jImport">Загрузить журнал…</button></div>
+   <div class="hint">Журнал хранится в этом браузере. Скачивайте копию время от времени. Клик по записи — открыть её с теми же номерами.</div>
+  </div>
+ </div>
+ <div id="pfoot"><button id="bNew">Новый ТУ</button><button class="pri" id="bJour" style="flex:1">Записать в журнал</button></div>
+</aside>
+<div id="main">
+ <div id="bar">
+  <div class="seg"><button data-view="proj" class="on">Проект · 12 л.</button><button data-view="prot">Протокол · 2 л.</button><button data-view="both">Оба</button></div>
+  <span class="sp"></span>
+  <button class="out" id="pdfP" title="В окне печати выбрать «Сохранить как PDF»">PDF проекта</button>
+  <button class="out" id="pdfR" title="В окне печати выбрать «Сохранить как PDF»">PDF протокола</button>
+  <button class="pri" id="prAll" title="Проект и протокол, каждый с последней страницы">🖨 Печать (с конца)</button>
+ </div>
+ <main id="sheets">
+  <div class="grp" id="gP"><div class="ghead">РАБОЧИЙ ПРОЕКТ</div><!--PROJ--></div>
+  <div class="grp" id="gR"><div class="ghead">ПРОТОКОЛ ЭТЛ</div><!--PROT--></div>
+ </main>
+</div>
+</div>
+<svg id="meas" xmlns="http://www.w3.org/2000/svg"><text id="mt"></text></svg>
+<input id="fJ" type="file" accept="application/json" hidden>
+<datalist id="orgs"><option>ОАО НЭСК ЧуПЭС</option><option>ОАО НЭСК БиПЭС</option></datalist>
+<datalist id="objs"><option>Жилой дом</option><option>Кошара</option><option>Магазин</option><option>Склад</option><option>Цех</option><option>Столовая</option><option>Гараж</option><option>Медцентр</option></datalist>
+<datalist id="cables"><option>АВВГ</option><option>СИП-2</option></datalist>
+<datalist id="sects"><option>4х16</option><option>4х25</option><option>4х35</option><option>4х50</option><option>4х70</option></datalist>
+<datalist id="dists"></datalist>
+<script>
+"use strict";
+const DYN = /*DYN*/;
+const PDEF = /*PDEF*/;
+const RDEF = /*RDEF*/;
+const SIGN0 = "/*SIGN*/";   // пусто в публичной версии — подпись загружается кнопкой и хранится в браузере
+const SEED = /*SEED*/;
+const SVGNS = "http://www.w3.org/2000/svg";
+
+/* ================= правила ================= */
+const POINTS = {   // точки погоды: райцентры
+ "Панфиловский район":[42.81,73.63], "Жайылский район":[42.8142,73.8481], "Аламудунский район":[42.73,74.63],
+ "Сокулукский район":[42.86,74.30], "Московский район":[42.83,74.11], "Ысык-Атинский район":[42.89,74.85],
+ "Чуйский район":[42.84,75.29], "Кеминский район":[42.79,75.69], "г. Бишкек":[42.87,74.59]};
+const ROMAN = ["","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+const CONST0 = {phase:"трехфазного",dev:"Нурматов",director:"А. Усубалиев",engineer:"А. Нурматов",lic_num:"04264",lic_date:"06 марта 2012",lic_date2:"06 марта 2012",
+ kl:"КЛ-0,4 кВ",cause:"вновь вводимый трехфазный ввод",volt:"0,66",time_off:"3",temp_cable:"5",probe_dist:"5",rz1:"25",rz2:"26",rz3:"25",
+ device:"Омметр UNI-T UT501A Зав.№С201056263",inspector:"Э. Женишбеков",chief:"А. Усубалиев"};
+const CONST_LBL = {phase:"Фаза (проект)",dev:"Разработал (штамп)",director:"Директор",engineer:"Инженер-проектировщик",lic_num:"Лицензия №",lic_date:"Лицензия от",lic_date2:"Лицензия от (2)",
+ kl:"Линия (протокол)",cause:"Причина испытаний",volt:"Номинальное напряжение",time_off:"Время с отключения, мин",temp_cable:"Температура кабеля",probe_dist:"Расстояние до зонда",
+ rz1:"Заземление 1, Ом",rz2:"Заземление 2, Ом",rz3:"Заземление 3, Ом",device:"Испытательная аппаратура",inspector:"Проверку производил",chief:"Начальник"};
+const P_CONST = ["phase","dev","director","engineer","lic_num","lic_date","lic_date2"];
+const F0 = {tu:"",tud:"",org:"ОАО НЭСК ЧуПЭС",custRaw:"",cust:"",obj:"Жилой дом",addr:"",dist:"Панфиловский район",kw:"10",conn:"ВЛ",tp:"",
+ cable:"АВВГ",sect:"4х16",len:"",prDate:"",numK:"",prObj:"",prAddr:"",tAir:"",sky:"ясно",w10:"",rA1:"",rA2:"",rB1:"",rB2:"",rC1:"",rC2:"",amp1:"",amp2:"",amp3:""};
+// поле → группа «авто»
+const AUTO = {cust:"cust",prDate:"prDate",numK:"numK",prObj:"prObj",prAddr:"prAddr",len:"len",tAir:"wx",sky:"wx",w10:"wx",
+ rA1:"iso",rA2:"iso",rB1:"iso",rB2:"iso",rC1:"iso",rC2:"iso",amp1:"amp",amp2:"amp",amp3:"amp"};
+
+const pad = n => String(n).padStart(2,"0");
+const dmy = iso => iso ? iso.slice(8,10)+"."+iso.slice(5,7)+"."+iso.slice(0,4) : "";
+const addDay = (iso,n) => { if(!iso) return ""; const d=new Date(iso+"T12:00:00"); d.setDate(d.getDate()+n); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+const normTu = s => String(s||"").toLowerCase().replace(/\s+/g,"").replace(/6$/,"б");
+function hash(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return h>>>0;}
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const rint = (r,a,b) => a+Math.floor(r()*(b-a+1));
+
+// ФИО: «-ой» = женщина (Петровой → Петрова), остальное — мужчина (Иванова → Иванов)
+function nominative(raw){
+ let s=String(raw||"").replace(/^\s*на\s+запрос\s*:?\s*/i,"").trim();if(!s)return {name:"",g:""};
+ const m=s.match(/^(\S+)(.*)$/);let sur=m[1],rest=m[2];let g="м";
+ if(/ой$/i.test(sur)){sur=sur.replace(/ой$/i,"а");g="ж";}
+ else if(/(ск|цк)ого$/i.test(sur))sur=sur.replace(/ого$/i,"ий");
+ else if(/(ов|ев|ёв|ин|ын)а$/i.test(sur))sur=sur.slice(0,-1);
+ return {name:sur+rest,g};
+}
+// мощность прописью (кВт — мужской род)
+function words(n){
+ const v=parseFloat(String(n).replace(",","."));if(!(v>0))return String(n||"");
+ if(v!==Math.floor(v)||v>=1000)return String(n);
+ const U=["","один","два","три","четыре","пять","шесть","семь","восемь","девять","десять","одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать"];
+ const T=["","","двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто"];
+ const H=["","сто","двести","триста","четыреста","пятьсот","шестьсот","семьсот","восемьсот","девятьсот"];
+ const w=[];const h=Math.floor(v/100),r=v%100;if(h)w.push(H[h]);if(r<20){if(r)w.push(U[r]);}else{w.push(T[Math.floor(r/10)]);if(r%10)w.push(U[r%10]);}
+ return `${v} (${w.join(" ")})`;
+}
+function amps(kw){const v=parseFloat(String(kw).replace(",","."))||0;
+ if(v<=10)return["25","25","25"];if(v<=20)return["40","40","25"];if(v<=40)return["80","80","63"];return["100","100","80"];}
+
+/* ================= состояние ================= */
+let F={...F0}, MAN=new Set(), CONST={...CONST0}, CUR=null, J=[];
+const store={get:(k,d)=>{try{const s=localStorage.getItem(k);return s?JSON.parse(s):d;}catch(_){return d;}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}}};
+function loadJournal(){
+ const own=store.get("tu_journal",null);
+ if(own){J=own;const have=new Set(J.map(e=>e.id));for(const s of SEED)if(!have.has(s.id))J.push(s);}
+ else J=SEED.map(e=>({...e}));
+ J.sort((a,b)=>(b.F.prDate||"").localeCompare(a.F.prDate||"")||(+b.F.numK||0)-(+a.F.numK||0));
+}
+function saveJournal(){store.set("tu_journal",J);}
+function keyOf(f){return normTu(f.tu)+"|"+f.cust+"|"+f.addr;}
+function findDup(){if(!F.tu)return null;const t=normTu(F.tu);
+ return J.find(e=>e.id!==CUR&&normTu(e.F.tu)===t&&(e.F.addr===F.addr||e.F.cust===F.cust||!F.addr))||null;}
+function nextNum(year){let mx=0;for(const e of J){if(e.id===CUR)continue;if((e.F.prDate||"").slice(0,4)!==year)continue;mx=Math.max(mx,(+e.F.numK||0)+1);}return mx?mx+1:1;}
+function lastIssued(year){let best=null;for(const e of J){if(e.id===CUR||(e.F.prDate||"").slice(0,4)!==year)continue;if(!best||(+e.F.numK)>(+best.F.numK))best=e;}return best;}
+
+/* ================= пересчёт ================= */
+function recompute(){
+ const seed=hash((F.tu||"")+"|"+(F.cust||F.custRaw||"")+"|"+(F.addr||""));
+ if(!MAN.has("cust"))F.cust=nominative(F.custRaw).name;
+ if(!MAN.has("prDate"))F.prDate=addDay(F.tud,1);
+ if(!MAN.has("prObj"))F.prObj=F.obj;
+ if(!MAN.has("prAddr"))F.prAddr=F.addr;
+ if(!MAN.has("amp"))[F.amp1,F.amp2,F.amp3]=amps(F.kw);
+ if(!MAN.has("len"))F.len=String(rint(rng(seed^0x51),25,30));
+ if(!MAN.has("iso")){const r=rng(seed);for(const ph of["A","B","C"]){const a=rint(r,782,809),d=[-3,-2,-1,0,0,2,3,5][rint(r,0,7)];F["r"+ph+"1"]=String(a);F["r"+ph+"2"]=String(Math.min(809,Math.max(779,a+d)));}}
+ const dup=findDup();
+ if(!MAN.has("numK"))F.numK=dup?String(dup.F.numK):(F.prDate?String(nextNum(F.prDate.slice(0,4))):"");
+}
+function derive(){
+ const y=(F.tud||"").slice(0,4)||String(new Date().getFullYear());
+ const ru=F.conn==="РУ";
+ const VP={...PDEF};P_CONST.forEach(k=>VP[k]=CONST[k]);
+ Object.assign(VP,{object:`${F.obj} ${F.cust}`.trim(),addr:F.addr,district:F.dist,order:F.tu,tu_num:F.tu,tu_date:dmy(F.tud),year:y,tu_org:F.org,
+  power:words(F.kw),line:ru?"кабельной линией 0,4 от РУ-0,4 кВ":"кабельной линией 0,4 от ВЛ-0,4 кВ",tap:ru?"от РУ-0,4 кВ ТП":"от опоры ВЛ-0,4 кВ",tp:F.tp,
+  cable:F.cable,sect:`(${F.sect}) мм²`,len_plan:F.len,len_spec:F.len,amp1:F.amp1,amp2:F.amp2,amp3:F.amp3});
+ const pd=F.prDate||"";const VR={...RDEF};for(const k in CONST)if(!P_CONST.includes(k)||k==="phase")VR[k]=CONST[k];
+ Object.assign(VR,{customer:F.cust,object:F.prObj,addr:F.prAddr,district:F.dist,day:pd.slice(8,10),month:pd.slice(5,7),year:pd.slice(0,4),
+  roman:ROMAN[+pd.slice(5,7)]||"",numK:F.numK,numZ:F.numK?String(+F.numK+1):"",length:F.len,cable_type:F.cable,sect:`(${F.sect}) мм`,
+  temp_air:F.tAir,temp2:F.tAir,sky:F.sky,sky2:F.sky,weather10:F.w10,rA1:F.rA1,rA2:F.rA2,rB1:F.rB1,rB2:F.rB2,rC1:F.rC1,rC2:F.rC2});
+ return {VP,VR};
+}
+function fileNames(){
+ const p=`3-х фазный ${(F.obj||"").toLowerCase()} ${F.cust}  ${F.addr}  `.replace(/\//g,"-").replace(/[\\:*?"<>|]/g,"");
+ return {proj:p,prot:`Протокол ${F.cust}`.replace(/[\\/:*?"<>|]/g,"-")};
+}
+
+/* ================= вёрстка (движок генераторов) ================= */
+const mt=document.getElementById('mt');const mcache=new Map();
+const LS_EM=0.0135;const LS=sz=>LS_EM*sz;
+function nat(s,sz){const key=sz+'|'+s;let v=mcache.get(key);if(v!==undefined)return v;mt.setAttribute('font-size',sz);mt.textContent=s;v=mt.getComputedTextLength();mcache.set(key,v);return v;}
+const clean=s=>s.replace(/­/g,'');
+function width(s,sz,ls){const c=clean(s);return nat(c,sz)+ls*c.length;}
+function subst(t,V){return t.replace(/\{(\w+)\}/g,(m,k)=>(k in V)?V[k]:k==="phaseAdj"?(V.phase||'').replace(/ого$/,'ый'):k==="lineTight"?(V.line||'').replace(/\s+кВ$/,'кВ'):m);}
+function parseRuns(s){const runs=[];const re=/<b>([\s\S]*?)<\/b>/g;let m,last=0;while((m=re.exec(s))){if(m.index>last)runs.push({t:s.slice(last,m.index),b:0});runs.push({t:m[1],b:1});last=re.lastIndex;}if(last<s.length)runs.push({t:s.slice(last),b:0});return runs;}
+function tokens(runs){const out=[];let cur=null;for(const r of runs){for(const piece of r.t.split(/(\s+)/)){if(piece==='')continue;if(/^\s+$/.test(piece)){cur=null;continue;}if(!cur){cur={t:'',parts:[]};out.push(cur);}cur.parts.push({t:piece,b:r.b});cur.t+=piece;}}return out;}
+const mkWord=(t,b)=>({t,parts:[{t,b}]});
+function cleanWord(w){return{t:clean(w.t),parts:w.parts.map(p=>({t:clean(p.t),b:p.b})).filter(p=>p.t!=='')};}
+function wrap(words,sz,wTotal,indent){const lines=[];let cur=[],avail=wTotal-(indent||0);const ls=LS(sz);const lineStr=arr=>arr.map(w=>w.t).join(' ');
+ for(let i=0;i<words.length;i++){const wd=words[i];const cand=cur.length?lineStr(cur)+' '+wd.t:wd.t;
+  if(cur.length&&width(cand,sz,ls)>avail+0.01){const segs=wd.t.split('­');let placed=false;
+   if(segs.length>1&&wd.parts.length===1){const bb=wd.parts[0].b;let acc='',k=-1;
+    for(let j=0;j<segs.length-1;j++){const a=acc+segs[j];if(width(lineStr(cur)+' '+a+'-',sz,ls)<=avail+0.01){acc=a;k=j;}else break;}
+    if(k>=0){cur.push(mkWord(acc+'-',bb));words.splice(i+1,0,mkWord(segs.slice(k+1).join('­'),bb));placed=true;}}
+   lines.push(cur);cur=[];avail=wTotal;if(placed)continue;}
+  cur.push(cleanWord(wd));}
+ if(cur.length)lines.push(cur);return lines;}
+function lineNode(x,y,sz,ls,words,bw,anchor){const t=document.createElementNS(SVGNS,'text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('font-size',sz);t.setAttribute('fill','#000');
+ if(ls)t.setAttribute('letter-spacing',+ls.toFixed(4));if(anchor)t.setAttribute('text-anchor',anchor);
+ const flat=[];words.forEach((w,i)=>{if(i)flat.push({t:' ',b:flat.length?flat[flat.length-1].b:0});w.parts.forEach(p=>flat.push({t:p.t,b:p.b}));});
+ let i=0;while(i<flat.length){const b=flat[i].b;let j=i,s='';while(j<flat.length&&(flat[j].b===b||flat[j].t===' ')){s+=flat[j].t;j++;}
+  const ts=document.createElementNS(SVGNS,'tspan');if(b){ts.setAttribute('stroke','#000');ts.setAttribute('stroke-width',bw);ts.setAttribute('paint-order','stroke');}ts.textContent=s;t.appendChild(ts);i=j;}
+ return t;}
+function drawFlow(g,d,V){const sz=d.sz,ls0=LS(sz);let y=d.y;
+ for(const item of d.items){const lines=wrap(tokens(parseRuns(subst(item,V))),sz,d.w,d.ind);
+  lines.forEach((ln,li)=>{const last=li===lines.length-1;const indent=li===0?d.ind:0;const avail=d.w-indent;const txt=ln.map(w=>w.t).join(' ');
+   let ls=ls0;if(!last&&txt.length>1)ls=Math.max(0,(avail-nat(txt,sz))/txt.length);g.appendChild(lineNode(d.x+indent,y,sz,ls,ln,d.b,null));y+=d.dy;});}}
+function drawStamp(g,d,V){let sz=d.sz,dy=d.dy,lines;for(let step=0;step<20;step++){lines=wrap(tokens(parseRuns(subst(d.tpl,V))),sz,d.w,0);if(lines.length<=d.maxl)break;sz*=0.94;dy*=0.94;}
+ const ls=LS(sz);let y=d.cy-(lines.length-1)*dy/2+0.1936*sz;for(const ln of lines){g.appendChild(lineNode(d.cx,y,+sz.toFixed(3),ls,ln,d.b,'middle'));y+=dy;}}
+function drawOne(g,d,V){const s=subst(d.tpl,V);let sz=d.sz,ls=LS(sz);const w=width(s,sz,ls);if(d.mw&&w>d.mw){const k=Math.max(d.mw/w,0.45);sz*=k;ls=LS(sz);}
+ const t=document.createElementNS(SVGNS,'text');t.setAttribute('x',d.x);t.setAttribute('y',d.y);t.setAttribute('font-size',+sz.toFixed(3));t.setAttribute('fill','#000');
+ t.setAttribute('letter-spacing',+ls.toFixed(4));if(d.a&&d.a!=='start')t.setAttribute('text-anchor',d.a);
+ if(d.b){t.setAttribute('stroke','#000');t.setAttribute('stroke-width',d.b);t.setAttribute('paint-order','stroke');}t.textContent=s;g.appendChild(t);}
+const groups={};document.querySelectorAll('g.dy').forEach(g=>groups[g.dataset.p]=g);
+function render(){const {VP,VR}=derive();
+ for(const k in groups)groups[k].textContent='';
+ for(const d of DYN){const g=groups[d.p];if(!g)continue;const V=d.s==='r'?VR:VP;
+  if(d.k==='one')drawOne(g,d,V);else if(d.k==='stamp')drawStamp(g,d,V);else if(d.k==='flow')drawFlow(g,d,V);}
+ placeSign();}
+// подпись Усубалиева на строке «2.____ Начальник»: линия видна сквозь прозрачный фон
+function placeSign(){
+ const SIGN=store.get("tu_sign",null)||SIGN0;
+ document.querySelectorAll('#gR .page').forEach(pg=>{const svg=pg.querySelector('svg');let sg=svg.querySelector('g.sig');if(sg)sg.remove();
+  const texts=[...svg.querySelectorAll('text')];const ch=texts.find(t=>t.textContent.includes('Начальник'));if(!ch)return;const yc=+ch.getAttribute('y');
+  const ln=texts.find(t=>Math.abs(+t.getAttribute('y')-yc)<4&&/2\._/.test(t.textContent));if(!ln)return;
+  const s=ln.textContent,i0=s.indexOf('2._')+2;let i1=i0;while(s[i1+1]==='_')i1++;
+  let a,b;try{a=ln.getExtentOfChar(i0);b=ln.getExtentOfChar(i1);}catch(_){return;}
+  const x0=a.x,x1=b.x+b.width,ybot=a.y+a.height,h=46,w=h*680/510,cx=(x0+x1)/2,line=ybot-2.5;
+  sg=document.createElementNS(SVGNS,'g');sg.setAttribute('class','sig');
+  const im=document.createElementNS(SVGNS,'image');im.setAttribute('href',SIGN);im.setAttribute('x',cx-w/2);im.setAttribute('y',line-h*.72);im.setAttribute('width',w);im.setAttribute('height',h);
+  sg.appendChild(im);svg.appendChild(sg);});}
+
+/* ================= погода ================= */
+let wxTimer=null,wxReq=0;
+function wxKey(){return F.dist+"|"+F.prDate;}
+async function getWx(dist,date){
+ const p=POINTS[dist];if(!p)throw new Error("нет точки погоды для района «"+dist+"»");
+ const cache=store.get("tu_wx",{});if(cache[dist+"|"+date])return cache[dist+"|"+date];
+ const d0=addDay(date,-10),q=`latitude=${p[0]}&longitude=${p[1]}&hourly=temperature_2m&daily=temperature_2m_max,weather_code&timezone=Asia%2FBishkek`;
+ const pick=j=>{const dd=j.daily;const i=dd.time.indexOf(date);if(i<0||dd.temperature_2m_max[i]==null)return null;const hh=j.hourly;
+  const day=hh.time.map((t,k)=>t.startsWith(date)&&+t.slice(11,13)>=12&&+t.slice(11,13)<=16?hh.temperature_2m[k]:null).filter(v=>v!=null);
+  const prev=dd.temperature_2m_max.slice(Math.max(0,i-10),i).filter(v=>v!=null);const code=dd.weather_code[i];
+  return {t:String(Math.round(day.length?Math.max(...day):dd.temperature_2m_max[i])),w10:prev.length?String(Math.round(Math.max(...prev))):"",sky:[0,1,2].includes(code)?"ясно":"пасмурно",code};};
+ let r=null;
+ try{const j=await (await fetch(`https://archive-api.open-meteo.com/v1/archive?${q}&start_date=${d0}&end_date=${date}`)).json();if(j.daily)r=pick(j);}catch(_){}
+ if(!r){const j=await (await fetch(`https://api.open-meteo.com/v1/forecast?${q}&past_days=92&forecast_days=7`)).json();if(j.daily)r=pick(j);}
+ if(!r)throw new Error("нет данных на эту дату");
+ cache[dist+"|"+date]=r;store.set("tu_wx",cache);return r;}
+function wantWx(force){clearTimeout(wxTimer);if(MAN.has("wx")&&!force){wxStatus("");return;}if(!F.prDate||!F.dist)return;
+ wxTimer=setTimeout(async()=>{const id=++wxReq;wxStatus("Погода: запрашиваю…");
+  try{const r=await getWx(F.dist,F.prDate);if(id!==wxReq)return;if(force)MAN.delete("wx");F.tAir=r.t;F.sky=r.sky;F.w10=r.w10;
+   wxStatus(`Погода ${dmy(F.prDate)}, ${F.dist}: ${r.t} °C днём, ${r.sky}, макс. за 10 дн. ${r.w10} °C (Open-Meteo)`);fillForm();render();persist();}
+  catch(e){if(id===wxReq)wxStatus("Погода не подтянулась ("+e.message+"). Введите вручную.");}},force?0:500);}
+function wxStatus(t){document.getElementById('wxStatus').textContent=t;}
+
+/* ================= форма ================= */
+const $=id=>document.getElementById(id);
+const inputs=[...document.querySelectorAll('[data-f]')];
+function fillForm(){
+ for(const i of inputs){const k=i.dataset.f;if(document.activeElement!==i)i.value=F[k]??"";const g=AUTO[k];i.classList.toggle('auto',!!g&&!MAN.has(g));
+  const sp=i.closest('label')?.querySelector('span');if(sp&&g){let b=sp.querySelector('.rs');if(MAN.has(g)){if(!b){b=document.createElement('button');b.type='button';b.className='rs';b.textContent='↺ авто';b.onclick=()=>{MAN.delete(g);update();if(g==="wx")wantWx(true);};sp.appendChild(b);}}else if(b)b.remove();}}
+ const ng=nominative(F.custRaw);$('genderHint').textContent=F.custRaw?(ng.g==="ж"?"Окончание «-ой» — женщина.":"Мужчина (окончание не «-ой»).")+(MAN.has("cust")?" Имя поправлено вручную.":""):"";
+ const y=(F.prDate||"").slice(0,4),li=y?lastIssued(y):null;
+ $('numHint').innerHTML=F.numK?`Протокол № <b>${F.numK}.${ROMAN[+F.prDate.slice(5,7)]||""}-К</b> и <b>${+F.numK+1}.${ROMAN[+F.prDate.slice(5,7)]||""}-З</b>`+(li?` · последний выданный в ${y}: № ${li.F.numK}/${+li.F.numK+1} (${li.F.cust})`:""):"";
+ renderNotes();renderConsts();}
+function renderNotes(){const n=$('notes');const dup=findDup();let h="";
+ if(dup)h+=`<div class="note warn"><b>Этот ТУ уже выдавался.</b> № ТУ ${dup.F.tu}, ${dup.F.cust}, протокол № ${dup.F.numK}/${+dup.F.numK+1} от ${dmy(dup.F.prDate)}. Номер взят оттуда — повторно не выдавать.<br><button class="sm" id="openDup">Открыть запись из журнала</button></div>`;
+ if(CUR){const e=J.find(x=>x.id===CUR);if(e)h+=`<div class="note ok">Открыто из журнала: <b>${e.F.cust}</b>, протокол № ${e.F.numK}. Изменения сохранятся в эту же запись.</div>`;}
+ const miss=[["tu","№ ТУ"],["tud","дата ТУ"],["custRaw","заказчик"],["addr","адрес"],["tp","точка подключения"]].filter(([k])=>!F[k]).map(x=>x[1]);
+ if(miss.length&&(F.tu||F.custRaw||F.addr))h+=`<div class="note warn">Не заполнено: ${miss.join(", ")}.</div>`;
+ n.innerHTML=h;const b=$('openDup');if(b)b.onclick=()=>openEntry(dup.id);}
+function renderConsts(){const box=$('consts');if(box.dataset.ok)return;box.dataset.ok=1;
+ box.innerHTML=Object.keys(CONST0).map(k=>`<label><span>${CONST_LBL[k]}</span><input data-c="${k}" value="${String(CONST[k]).replace(/"/g,'&quot;')}"></label>`).join("")+`<label><span>Подпись начальника (PNG, прозрачный фон)</span></label><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="sm" id="sLoad" type="button">${store.get("tu_sign",null)?"Заменить подпись…":"Загрузить подпись…"}</button>${store.get("tu_sign",null)?`<button class="sm" id="sDel" type="button">Убрать</button>`:""}<button class="sm" id="cReset" type="button">Вернуть как было</button></div><input type="file" id="fSign" accept="image/png" hidden>`;
+ box.querySelectorAll('[data-c]').forEach(i=>i.oninput=()=>{CONST[i.dataset.c]=i.value;store.set("tu_const",CONST);render();});
+ $('sLoad').onclick=()=>$('fSign').click();
+ $('fSign').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{store.set("tu_sign",rd.result);delete box.dataset.ok;renderConsts();render();};rd.readAsDataURL(f);};
+ if($('sDel'))$('sDel').onclick=()=>{try{localStorage.removeItem("tu_sign");}catch(_){}delete box.dataset.ok;renderConsts();render();};
+ $('cReset').onclick=()=>{CONST={...CONST0};store.set("tu_const",CONST);delete box.dataset.ok;renderConsts();render();};}
+function persist(){store.set("tu_form",{F,MAN:[...MAN],CUR});}
+let rT=null;
+function update(){recompute();fillForm();clearTimeout(rT);rT=setTimeout(render,60);persist();}
+inputs.forEach(i=>i.addEventListener('input',()=>{const k=i.dataset.f;F[k]=i.value;const g=AUTO[k];if(g)MAN.add(g);
+ update();if(k==="dist"||k==="prDate"||k==="tud")wantWx(false);}));
+$('lenDice').onclick=()=>{F.len=String(25+Math.floor(Math.random()*6));MAN.add("len");update();};
+$('isoDice').onclick=()=>{const r=Math.random;for(const ph of["A","B","C"]){const a=782+Math.floor(r()*28),d=[-3,-2,-1,0,0,2,3,5][Math.floor(r()*8)];F["r"+ph+"1"]=String(a);F["r"+ph+"2"]=String(Math.min(809,Math.max(779,a+d)));}MAN.add("iso");update();};
+$('wxBtn').onclick=()=>wantWx(true);
+
+/* ================= журнал ================= */
+function jEntry(){return {id:CUR||("e"+Date.now().toString(36)),F:{...F},MAN:[...MAN],saved:new Date().toISOString()};}
+function toJournal(silent){
+ if(!F.cust||!F.tu||!F.numK){if(!silent)alert("Заполните хотя бы № ТУ, заказчика и номер протокола.");return false;}
+ const dup=findDup();
+ if(dup&&!CUR){if(!confirm(`ТУ ${dup.F.tu} уже есть в журнале (${dup.F.cust}, протокол № ${dup.F.numK}). Обновить ту запись?`))return false;CUR=dup.id;}
+ const clash=J.find(e=>e.id!==CUR&&e.F.numK==F.numK&&(e.F.prDate||"").slice(0,4)===(F.prDate||"").slice(0,4));
+ if(clash&&!confirm(`Номер протокола ${F.numK} уже занят (${clash.F.cust}, ${dmy(clash.F.prDate)}). Всё равно записать?`))return false;
+ for(const g of new Set(Object.values(AUTO)))MAN.add(g);   // номера и случайные значения закрепляем
+ const e=jEntry();CUR=e.id;const i=J.findIndex(x=>x.id===e.id);if(i>=0)J[i]=e;else J.unshift(e);saveJournal();persist();fillForm();renderJournal();
+ if(!silent)flash("Записано в журнал");return true;}
+function openEntry(id){const e=J.find(x=>x.id===id);if(!e)return;F={...F0,...e.F};MAN=new Set(e.MAN||Object.values(AUTO));CUR=e.id;
+ recompute();fillForm();render();persist();showTab("form");}
+function renderJournal(){const q=$('jsearch').value.trim().toLowerCase();const L=$('jlist');
+ const rows=J.filter(e=>!q||[e.F.cust,e.F.addr,e.F.tu,e.F.numK,e.F.custRaw].join(" ").toLowerCase().includes(q));
+ L.innerHTML=rows.map(e=>`<div class="jr${e.id===CUR?" cur":""}" data-id="${e.id}"><div class="t"><span class="n">№ ${e.F.numK}/${+e.F.numK+1}</span><span>${e.F.cust}</span><span class="d">${dmy(e.F.prDate)}</span></div>
+  <div class="s">ТУ ${e.F.tu} от ${dmy(e.F.tud)} · ${e.F.obj}, ${e.F.addr}</div><div class="s">${e.F.cable} ${e.F.sect}, ${e.F.len} м · ${e.F.kw} кВт · от ${e.F.conn}</div></div>`).join("")||`<div class="hint">Ничего не найдено.</div>`;
+ L.querySelectorAll('.jr').forEach(r=>r.onclick=()=>openEntry(r.dataset.id));
+ document.querySelector('[data-tab=jour]').textContent=`Журнал · ${J.length}`;}
+$('jsearch').oninput=renderJournal;
+$('jExport').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(J,null,1)],{type:"application/json"}));a.download=`Журнал ТУ ${new Date().toISOString().slice(0,10)}.json`;a.click();};
+$('jImport').onclick=()=>$('fJ').click();
+$('fJ').onchange=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;f.text().then(t=>{try{const arr=JSON.parse(t);const have=new Map(J.map(x=>[x.id,x]));let n=0;for(const x of arr)if(x&&x.F){have.set(x.id,x);n++;}J=[...have.values()];saveJournal();renderJournal();flash(`Загружено записей: ${n}`);}catch(_){alert("Это не файл журнала.");}});};
+$('bJour').onclick=()=>toJournal(false);
+$('bNew').onclick=()=>{F={...F0};MAN=new Set();CUR=null;update();render();wxStatus("");showTab("form");document.querySelector('[data-f=tu]').focus();};
+function showTab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$('tabForm').hidden=t!=="form";$('tabJour').hidden=t!=="jour";if(t==="jour")renderJournal();}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function flash(t){const b=$('bJour'),o=b.textContent;b.textContent="✓ "+t;b.disabled=true;setTimeout(()=>{b.textContent=o;b.disabled=false;},1400);}
+
+/* ================= вид и печать ================= */
+document.querySelectorAll('#bar .seg button').forEach(b=>b.onclick=()=>{document.body.dataset.view=b.dataset.view;document.querySelectorAll('#bar .seg button').forEach(x=>x.classList.toggle('on',x===b));$('sheets').scrollTop=0;placeSign();});
+let restore=null;
+function doPrint(which,rev){
+ if(!F.cust||!F.tu){alert("Сначала заполните данные ТУ.");return;}
+ toJournal(true);
+ const names=fileNames(),title0=document.title;
+ document.title=which==="proj"?names.proj:which==="prot"?names.prot:`${names.prot} + проект`;
+ document.body.dataset.print=which;
+ const orig=[];
+ for(const id of ["gP","gR"]){const g=$(id);const pages=[...g.querySelectorAll('.page')];orig.push([g,pages]);if(rev)[...pages].reverse().forEach(p=>g.appendChild(p));}
+ const vis=which==="proj"?[$('gP')]:which==="prot"?[$('gR')]:[$('gP'),$('gR')];
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('lastp'));const lastG=vis[vis.length-1];const lp=[...lastG.querySelectorAll('.page')].pop();lp.classList.add('lastp');
+ restore=()=>{document.title=title0;delete document.body.dataset.print;for(const [g,pages] of orig)pages.forEach(p=>g.appendChild(p));lp.classList.remove('lastp');restore=null;};
+ document.fonts.ready.then(()=>{window.print();});}
+window.addEventListener('afterprint',()=>restore&&restore());
+$('pdfP').onclick=()=>doPrint("proj",false);
+$('pdfR').onclick=()=>doPrint("prot",false);
+$('prAll').onclick=()=>doPrint("all",true);
+
+/* ================= старт ================= */
+$('dists').innerHTML=Object.keys(POINTS).map(k=>`<option>${k}</option>`).join("");
+CONST={...CONST0,...store.get("tu_const",{})};
+loadJournal();
+const st=store.get("tu_form",null);if(st){F={...F0,...st.F};MAN=new Set(st.MAN||[]);CUR=st.CUR||null;if(CUR&&!J.some(e=>e.id===CUR))CUR=null;}
+recompute();fillForm();renderJournal();
+document.fonts.load('12px ISO').then(()=>document.fonts.ready).then(()=>{mcache.clear();render();});
+render();
+</script>
+</body></html>
