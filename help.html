@@ -51,6 +51,21 @@ th{background:var(--bg)}
 .dlg .row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid #eceef1;gap:10px}
 .dlg .row:last-child{border:0}
 .dlg .v{border:2px solid var(--red);border-radius:6px;padding:2px 8px;font-weight:600;white-space:nowrap}
+.wide .scr{position:relative}
+.swipe{display:none;font-size:13px;color:var(--mut);margin:6px 0 0}
+@media (max-width:700px){
+ .wide .scr{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;scroll-snap-type:x proximity}
+ .wide .scr a{width:1000px}
+ .wide .scr img{width:1000px;max-width:none;border:0;border-radius:0}
+ .swipe{display:block}
+ table.steps,table.steps tbody,table.steps tr,table.steps td{display:block;width:100%}
+ table.steps tr:first-child{display:none}
+ table.steps tr{border:1px solid var(--line);border-radius:10px;margin:0 0 10px;padding:8px 12px;background:var(--bg)}
+ table.steps td{border:0;padding:3px 0}
+ table.steps td:first-child{font-weight:700;font-size:16px}
+ table.steps td:nth-child(2)::before{content:"Вписать: ";color:var(--mut)}
+ table.steps td:nth-child(3)::before{content:"Внимание: ";color:var(--mut)}
+}
 .lnk{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:8px;font-weight:600;margin:4px 0}
 </style></head>
 <body>
@@ -81,7 +96,7 @@ th{background:var(--bg)}
 
 <section id="s2"><h2><span class="n">2</span>Что где на экране</h2>
  <p>Слева — данные ТУ, справа — готовые листы. Листы меняются сразу, пока вы печатаете.</p>
- <figure><a href="help/overview.png" target="_blank"><img src="help/overview.png" alt="Общий вид генератора"></a><figcaption>Нажмите на картинку, чтобы открыть крупно.</figcaption></figure>
+ <figure class="wide"><div class="scr"><a href="help/overview.png" target="_blank"><img src="help/overview.png" alt="Общий вид генератора"></a></div><div class="swipe">← листайте картинку вбок · нажмите, чтобы открыть крупно →</div></figure>
  <ol class="marks">
   <li data-n="1">Вкладки: <b>Новый ТУ</b> (форма) и <b>Журнал</b> (все выданные протоколы, цифра — сколько их).</li>
   <li data-n="2">Блок «Из технических условий» — сюда переписываете данные с бумажного ТУ.</li>
@@ -96,7 +111,7 @@ th{background:var(--bg)}
 
 <section id="s3"><h2><span class="n">3</span>Заполнение по ТУ — шаг за шагом</h2>
  <p>Начинайте с кнопки <b>Новый ТУ</b>. Дальше сверху вниз:</p>
- <table>
+ <table class="steps">
   <tr><th>Поле</th><th>Что вписать</th><th>На что обратить внимание</th></tr>
   <tr><td>№ ТУ, Дата ТУ</td><td>Исходящий номер и дату с бланка ТУ</td><td>Буква «б» в номере — это буква, не цифра 6 (565/70<b>б</b>). Номер ТУ = номер заказа в проекте.</td></tr>
   <tr><td>Заказчик — как в ТУ</td><td>Как написано после «На запрос:»</td><td>Ниже программа сама ставит имя в именительном падеже.</td></tr>
@@ -112,7 +127,7 @@ th{background:var(--bg)}
 </section>
 
 <section id="s4"><h2><span class="n">4</span>Протокол: дата, номер, погода</h2>
- <figure><a href="help/protocol.png" target="_blank"><img src="help/protocol.png" alt="Блок протокола и лист протокола"></a></figure>
+ <figure class="wide"><div class="scr"><a href="help/protocol.png" target="_blank"><img src="help/protocol.png" alt="Блок протокола и лист протокола"></a></div><div class="swipe">← листайте картинку вбок · нажмите, чтобы открыть крупно →</div></figure>
  <ol class="marks">
   <li data-n="1"><b>Дата протокола</b> — сама: дата ТУ <b>+ 1 день</b>. Месяц в номере пишется римскими (XI).</li>
   <li data-n="2"><b>Номер</b> — сам: следующий после последнего выданного. Под полем видно «последний выданный: № … (фамилия)» — проверьте, что номер идёт по порядку.</li>
@@ -151,14 +166,14 @@ th{background:var(--bg)}
 </section>
 
 <section id="s7"><h2><span class="n">7</span>Если ТУ уже выдавался</h2>
- <figure><a href="help/dup.png" target="_blank"><img src="help/dup.png" alt="Предупреждение о повторном ТУ"></a></figure>
+ <figure class="wide"><div class="scr"><a href="help/dup.png" target="_blank"><img src="help/dup.png" alt="Предупреждение о повторном ТУ"></a></div><div class="swipe">← листайте картинку вбок · нажмите, чтобы открыть крупно →</div></figure>
  <ol class="marks">
   <li data-n="1">Если такой № ТУ уже есть в журнале — появится <b>жёлтое предупреждение</b>. Номер протокола берётся из старой выдачи, новый номер не тратится. Повторно такой протокол <b>не выдавать</b>; «Открыть запись из журнала» — открыть ту выдачу.</li>
  </ol>
 </section>
 
 <section id="s8"><h2><span class="n">8</span>Журнал</h2>
- <figure><a href="help/journal.png" target="_blank"><img src="help/journal.png" alt="Журнал выданных протоколов"></a></figure>
+ <figure class="wide"><div class="scr"><a href="help/journal.png" target="_blank"><img src="help/journal.png" alt="Журнал выданных протоколов"></a></div><div class="swipe">← листайте картинку вбок · нажмите, чтобы открыть крупно →</div></figure>
  <ol class="marks">
   <li data-n="1">Поиск — по фамилии, адресу, № ТУ или № протокола.</li>
   <li data-n="2">Запись: номер протокола, заказчик, дата, ТУ, кабель. Нажмите — откроется с теми же номерами (можно перепечатать).</li>
@@ -169,7 +184,7 @@ th{background:var(--bg)}
 </section>
 
 <section id="s9"><h2><span class="n">9</span>Постоянные данные (БиПЭС)</h2>
- <figure><a href="help/consts.png" target="_blank"><img src="help/consts.png" alt="Постоянные данные"></a></figure>
+ <figure class="wide"><div class="scr"><a href="help/consts.png" target="_blank"><img src="help/consts.png" alt="Постоянные данные"></a></div><div class="swipe">← листайте картинку вбок · нажмите, чтобы открыть крупно →</div></figure>
  <ol class="marks">
   <li data-n="1">Внизу формы — «Постоянные данные»: директор, лицензия, прибор, инженер ЭТЛ. Обычно не трогаются.</li>
   <li data-n="2"><b>Кем выданы ТУ</b> — по умолчанию «ОАО НЭСК ЧуПЭС». Для ТУ Аламудунского района (БиПЭС) выберите «ОАО НЭСК БиПЭС». Значение запоминается — после БиПЭС не забудьте вернуть ЧуПЭС.</li>
