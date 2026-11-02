@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3f4651">
 <title>Генератор ТУ</title>
 <style>
 @font-face{font-family:ISO;src:url(data:font/woff2;base64,/*FONT*/) format('woff2');font-display:block}
@@ -74,11 +76,52 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
 .times{font-family:'Times New Roman',serif;font-style:normal}
 .arial{font-family:Arial,Helvetica,sans-serif;font-style:normal}
 #meas{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+#mnav{display:none;position:fixed;left:0;right:0;bottom:0;height:calc(58px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line);z-index:40}
+#mnav button{flex:1;border:0;border-radius:0;background:none;font-size:12px;font-weight:500;color:#6b7280;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0}
+#mnav button.on{color:var(--acc)}
+#mnav svg{width:23px;height:23px}
+#mnav .cnt{font-size:10px;color:#9aa3af}
+@media screen and (max-width:820px){
+  body{font-size:15px}
+  #app{flex-direction:column;height:100dvh}
+  #panel{width:auto;flex:1 1 auto;border:0}
+  #phead{padding:10px 14px 8px;background:#3f4651;color:#fff}
+  #phead h1{margin:0;font-size:17px}
+  #phead h1 .hint{color:#cfd5dd}
+  #tabs{display:none}
+  #pbody{padding:12px 12px 140px;border:0;background:var(--panel)}
+  #pfoot{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));z-index:30;box-shadow:0 -3px 12px rgba(0,0,0,.08);padding:8px 12px}
+  fieldset{padding:6px 12px 12px;border-radius:10px}
+  details{border-radius:10px}
+  input,select,textarea{font-size:16px;padding:9px 10px;border-radius:7px}
+  label>span{font-size:12.5px}
+  label>span .rs{font-size:13px}
+  button{padding:11px 12px;font-size:14px;border-radius:8px}
+  button.sm{padding:8px 11px;font-size:13px}
+  .hint,.wxs{font-size:12.5px}
+  .note{font-size:13.5px}
+  .isogrid{grid-template-columns:24px 1fr 1fr;font-size:14px}
+  .jr{padding:10px 12px;border-radius:10px}
+  .jr .s{font-size:12.5px}
+  #main{display:none;flex:1 1 auto;min-height:0}
+  body[data-m=sheets] #panel{display:none}
+  body[data-m=sheets] #main{display:flex}
+  #bar{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));z-index:30;padding:8px 10px;gap:6px}
+  #bar .seg{width:100%}
+  #bar .seg button{flex:1;padding:8px 4px;font-size:13px}
+  #bar .sp{display:none}
+  #bar>button{flex:1 1 30%;padding:10px 4px;font-size:13px}
+  #sheets{padding:10px 10px 190px;gap:10px}
+  .grp{gap:10px}
+  .pnum{display:none}
+  #mnav{display:flex}
+}
 @media print{
   @page{size:A4;margin:0}
   html,body{height:auto;background:#fff}
   #app{display:block;height:auto}
-  #panel,#bar,.pnum,.ghead{display:none!important}
+  #panel,#bar,.pnum,.ghead,#mnav{display:none!important}
+  .grp{zoom:1!important}
   #main{display:block}
   #sheets{padding:0;gap:0;display:block;overflow:visible}
   .grp{display:block}
@@ -89,7 +132,7 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
   .page.lastp{break-after:auto;page-break-after:auto}
 }
 </style></head>
-<body data-view="proj">
+<body data-view="proj" data-m="form">
 <div id="app">
 <aside id="panel">
  <div id="phead"><h1>Генератор ТУ <span class="hint" style="margin:0;font-weight:400">проект + протокол</span></h1>
@@ -159,6 +202,11 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
  </main>
 </div>
 </div>
+<nav id="mnav">
+ <button data-m="form" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h10l4 4v14H5z"/><path d="M8 11h8M8 15h8M8 7h5"/></svg>Данные</button>
+ <button data-m="sheets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="16" rx="1"/><path d="M3 6v15h12"/></svg>Листы</button>
+ <button data-m="jour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg><span>Журнал <span class="cnt" id="mcnt"></span></span></button>
+</nav>
 <svg id="meas" xmlns="http://www.w3.org/2000/svg"><text id="mt"></text></svg>
 <input id="fJ" type="file" accept="application/json" hidden>
 <datalist id="orgs"><option>ОАО НЭСК ЧуПЭС</option><option>ОАО НЭСК БиПЭС</option></datalist>
@@ -399,15 +447,22 @@ function renderJournal(){const q=$('jsearch').value.trim().toLowerCase();const L
  L.innerHTML=rows.map(e=>`<div class="jr${e.id===CUR?" cur":""}" data-id="${e.id}"><div class="t"><span class="n">№ ${e.F.numK}/${+e.F.numK+1}</span><span>${e.F.cust}</span><span class="d">${dmy(e.F.prDate)}</span></div>
   <div class="s">ТУ ${e.F.tu} от ${dmy(e.F.tud)} · ${e.F.obj}, ${e.F.addr}</div><div class="s">${e.F.cable} ${e.F.sect}, ${e.F.len} м · ${e.F.kw} кВт · от ${e.F.conn}</div></div>`).join("")||`<div class="hint">Ничего не найдено.</div>`;
  L.querySelectorAll('.jr').forEach(r=>r.onclick=()=>openEntry(r.dataset.id));
- document.querySelector('[data-tab=jour]').textContent=`Журнал · ${J.length}`;}
+ document.querySelector('[data-tab=jour]').textContent=`Журнал · ${J.length}`;$('mcnt').textContent=J.length;}
 $('jsearch').oninput=renderJournal;
 $('jExport').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(J,null,1)],{type:"application/json"}));a.download=`Журнал ТУ ${new Date().toISOString().slice(0,10)}.json`;a.click();};
 $('jImport').onclick=()=>$('fJ').click();
 $('fJ').onchange=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;f.text().then(t=>{try{const arr=JSON.parse(t);const have=new Map(J.map(x=>[x.id,x]));let n=0;for(const x of arr)if(x&&x.F){have.set(x.id,x);n++;}J=[...have.values()];saveJournal();renderJournal();flash(`Загружено записей: ${n}`);}catch(_){alert("Это не файл журнала.");}});};
 $('bJour').onclick=()=>toJournal(false);
 $('bNew').onclick=()=>{F={...F0};MAN=new Set();CUR=null;update();render();wxStatus("");showTab("form");document.querySelector('[data-f=tu]').focus();};
-function showTab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$('tabForm').hidden=t!=="form";$('tabJour').hidden=t!=="jour";if(t==="jour")renderJournal();}
+function showTab(t){setM(t==='jour'?'jour':'form',true);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$('tabForm').hidden=t!=="form";$('tabJour').hidden=t!=="jour";if(t==="jour")renderJournal();}
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+/* ----- телефон: нижняя панель и листы по ширине экрана ----- */
+const MOB=matchMedia('screen and (max-width:820px)');
+function fitPages(){const k=MOB.matches?Math.min(1,($('sheets').clientWidth-20)/793.7):1;document.querySelectorAll('#sheets .grp').forEach(g=>g.style.zoom=k);}
+function setM(m,quiet){document.body.dataset.m=m;document.querySelectorAll('#mnav button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+ if(quiet)return;if(m==='sheets'){fitPages();placeSign();$('sheets').scrollTop=0;}else showTab(m==='jour'?'jour':'form');}
+document.querySelectorAll('#mnav button').forEach(b=>b.onclick=()=>setM(b.dataset.m));
+MOB.addEventListener('change',fitPages);window.addEventListener('resize',fitPages);
 function flash(t){const b=$('bJour'),o=b.textContent;b.textContent="✓ "+t;b.disabled=true;setTimeout(()=>{b.textContent=o;b.disabled=false;},1400);}
 
 /* ================= вид и печать ================= */
