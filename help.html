@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Как пользоваться</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#1c2128;--mut:#5f6772;--line:#dde0e5;--acc:#2f6fdd;--red:#e11d48;--warn:#fff4d6;--warnbd:#e8c25c;--ok:#e7f6ec;--okbd:#9fd3b0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--card:#1e2228;--ink:#e6e8eb;--mut:#a3aab5;--line:#30353d;--warn:#3a3220;--warnbd:#8a6d1e;--ok:#1d3326;--okbd:#2f6b45}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{background:#3f4651;color:#fff;padding:28px 16px 24px}
+header .in,main{max-width:980px;margin:0 auto}
+header h1{margin:0 0 6px;font-size:26px;line-height:1.25}
+header p{margin:0;color:#d6dbe2}
+header a{color:#fff}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:20px 0}
+nav.toc b{display:block;margin-bottom:6px}
+nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:28px}
+@media (max-width:640px){nav.toc ol{columns:1}}
+nav.toc a{color:var(--acc);text-decoration:none}
+main{padding:0 16px 60px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 18px;margin:0 0 22px}
+@media (max-width:640px){section{padding:18px 14px 14px}}
+h2{margin:0 0 10px;font-size:21px;line-height:1.3;display:flex;gap:10px;align-items:baseline}
+h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-size:15px}
+h3{font-size:17px;margin:18px 0 6px}
+p{margin:8px 0}
+figure{margin:14px 0}
+figure a{display:block}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+figure.phone{max-width:320px}
+figcaption{font-size:13px;color:var(--mut);margin-top:6px}
+.phones{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.phones figure{flex:1 1 220px;max-width:300px;margin:6px 0}
+ol.marks{list-style:none;padding:0;margin:10px 0}
+ol.marks li{position:relative;padding-left:40px;margin:9px 0}
+ol.marks li::before{content:attr(data-n);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.tip,.warn,.ok{border-radius:10px;padding:10px 14px;margin:12px 0;font-size:15px}
+.warn{background:var(--warn);border:1px solid var(--warnbd)}
+.ok{background:var(--ok);border:1px solid var(--okbd)}
+.tip{background:rgba(47,111,221,.08);border:1px solid rgba(47,111,221,.3)}
+.auto{background:#eef4ff;border:1px solid #c9d8f5;border-radius:5px;padding:0 6px;color:#1c2128;white-space:nowrap}
+.white{background:#fff;border:1px solid #c8ccd2;border-radius:5px;padding:0 6px;color:#1c2128;white-space:nowrap}
+kbd{font:13px -apple-system,Arial;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--bg)}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+td,th{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+.check li{margin:5px 0}
+.dlg{border:1px solid var(--line);border-radius:12px;max-width:440px;overflow:hidden;background:#fff;color:#1c2128;font-size:14px;margin:12px 0}
+.dlg .hd{background:#f1f3f5;padding:8px 14px;font-weight:600;border-bottom:1px solid #dde0e5}
+.dlg .row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid #eceef1;gap:10px}
+.dlg .row:last-child{border:0}
+.dlg .v{border:2px solid var(--red);border-radius:6px;padding:2px 8px;font-weight:600;white-space:nowrap}
+.lnk{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:9px 16px;border-radius:8px;font-weight:600;margin:4px 0}
+</style></head>
+<body>
+<header><div class="in">
+ <h1>Генератор ТУ — как пользоваться</h1>
+ <p>Пошаговая инструкция: вход, заполнение по техусловиям, печать, журнал, телефон. Красные кружки на картинках — пояснения ниже под картинкой.</p>
+</div></header>
+<main>
+
+<nav class="toc"><b>Содержание</b><ol>
+ <li><a href="#s1">Вход на сайт</a></li><li><a href="#s2">Что где на экране</a></li><li><a href="#s3">Заполнение по ТУ</a></li>
+ <li><a href="#s4">Протокол: номер, дата, погода</a></li><li><a href="#s5">Проверка перед печатью</a></li><li><a href="#s6">PDF и печать</a></li>
+ <li><a href="#s7">Если ТУ уже выдавался</a></li><li><a href="#s8">Журнал</a></li><li><a href="#s9">Постоянные данные (БиПЭС)</a></li>
+ <li><a href="#s10">С телефона</a></li><li><a href="#s11">Частые вопросы</a></li></ol></nav>
+
+<section id="s1"><h2><span class="n">1</span>Вход на сайт</h2>
+ <p>Откройте ссылку в браузере (на компьютере лучше <b>Google Chrome</b>, на iPhone — Safari):</p>
+ <p><a class="lnk" href="index.html">kumanurmatov.github.io/elektro-komfort-docs</a></p>
+ <p>На главной две плитки: <b>Генератор ТУ</b> (проект + протокол) и <b>Редактор схем</b> (ситуационные схемы). Генератор закрыт кодом.</p>
+ <figure class="phone"><a href="help/login.png" target="_blank"><img src="help/login.png" alt="Окно ввода кода"></a></figure>
+ <ol class="marks">
+  <li data-n="1">Введите <b>код доступа</b> — его присылают отдельно (в инструкции его нет).</li>
+  <li data-n="2">«Запомнить на этом устройстве» — оставьте галочку, тогда код больше спрашивать не будет.</li>
+  <li data-n="3">Нажмите <b>Открыть</b>. Если написано «Неверный код» — проверьте раскладку и дефисы.</li>
+ </ol>
+ <div class="tip">На телефоне удобно сделать иконку: в Safari «Поделиться» → «На экран „Домой“», в Chrome на Android «⋮» → «Добавить на главный экран».</div>
+</section>
+
+<section id="s2"><h2><span class="n">2</span>Что где на экране</h2>
+ <p>Слева — данные ТУ, справа — готовые листы. Листы меняются сразу, пока вы печатаете.</p>
+ <figure><a href="help/overview.png" target="_blank"><img src="help/overview.png" alt="Общий вид генератора"></a><figcaption>Нажмите на картинку, чтобы открыть крупно.</figcaption></figure>
+ <ol class="marks">
+  <li data-n="1">Вкладки: <b>Новый ТУ</b> (форма) и <b>Журнал</b> (все выданные протоколы, цифра — сколько их).</li>
+  <li data-n="2">Блок «Из технических условий» — сюда переписываете данные с бумажного ТУ.</li>
+  <li data-n="3"><span class="auto">Голубые поля</span> программа заполняет сама по правилам. Их можно поправить — поле станет <span class="white">белым</span>, а кнопка «↺ авто» рядом вернёт расчёт.</li>
+  <li data-n="4">Что показывать справа: проект (12 листов), протокол (2 листа) или оба.</li>
+  <li data-n="5"><b>PDF проекта</b> / <b>PDF протокола</b> — сохранить файл.</li>
+  <li data-n="6"><b>Печать (с конца)</b> — сразу на принтер проект и протокол, каждый с последней страницы.</li>
+  <li data-n="7">Масштаб листов: «−» / «+», нажатие на проценты — вернуть. Также ⌘ + колесо мыши.</li>
+  <li data-n="8"><b>Новый ТУ</b> — очистить форму под следующий ТУ. <b>Записать в журнал</b> — сохранить выдачу (при печати и PDF это делается само).</li>
+ </ol>
+</section>
+
+<section id="s3"><h2><span class="n">3</span>Заполнение по ТУ — шаг за шагом</h2>
+ <p>Начинайте с кнопки <b>Новый ТУ</b>. Дальше сверху вниз:</p>
+ <table>
+  <tr><th>Поле</th><th>Что вписать</th><th>На что обратить внимание</th></tr>
+  <tr><td>№ ТУ, Дата ТУ</td><td>Исходящий номер и дату с бланка ТУ</td><td>Буква «б» в номере — это буква, не цифра 6 (565/70<b>б</b>). Номер ТУ = номер заказа в проекте.</td></tr>
+  <tr><td>Заказчик — как в ТУ</td><td>Как написано после «На запрос:»</td><td>Ниже программа сама ставит имя в именительном падеже.</td></tr>
+  <tr><td>Заказчик в документах</td><td><span class="auto">сам</span></td><td>Правило: окончание <b>«-ой»</b> — женщина (Петровой → Петрова), любое другое — мужчина (Иванова → Иванов). Подсказка под полем пишет, что выбрано. Если ошиблось — поправьте вручную.</td></tr>
+  <tr><td>Объект, Адрес</td><td>Как в ТУ («Жилой дом», «Кошара»…)</td><td>Адрес полностью: «с. …, ул. … дом».</td></tr>
+  <tr><td>Район, кВт</td><td>Из ТУ</td><td>Мощность определяет автоматы (см. ниже).</td></tr>
+  <tr><td>Подключение</td><td><b>ВЛ</b> или <b>РУ</b></td><td><b>Строго как в ТУ</b>: «от ВЛ-0,4 кВ» → ВЛ, «от РУ-0,4 кВ» → РУ. Это меняет текст в проекте.</td></tr>
+  <tr><td>Точка</td><td>Фидер, опора, ТП</td><td>Например «ф-1 опора №5 ТП-П000», или только «ТП-П000».</td></tr>
+  <tr><td>Кабель: марка, сечение</td><td>АВВГ / СИП-2, 4х16 / 4х25 / 4х35…</td><td>По умолчанию АВВГ 4х16 — меняйте, если в ТУ или по заданию другое.</td></tr>
+  <tr><td>Длина, м</td><td><span class="auto">сама 25–30 м</span></td><td>Если длина известна — впишите её. Одна и та же цифра попадёт на план (лист 5), в спецификацию (лист 11) и в протокол.</td></tr>
+  <tr><td>Автоматы</td><td><span class="auto">сами</span></td><td>До 10 кВт — 25/25/25, до 20 кВт — 40/40/25, до 40 кВт — 80/80/63.</td></tr>
+ </table>
+</section>
+
+<section id="s4"><h2><span class="n">4</span>Протокол: дата, номер, погода</h2>
+ <figure><a href="help/protocol.png" target="_blank"><img src="help/protocol.png" alt="Блок протокола и лист протокола"></a></figure>
+ <ol class="marks">
+  <li data-n="1"><b>Дата протокола</b> — сама: дата ТУ <b>+ 1 день</b>. Месяц в номере пишется римскими (XI).</li>
+  <li data-n="2"><b>Номер</b> — сам: следующий после последнего выданного. Под полем видно «последний выданный: № … (фамилия)» — проверьте, что номер идёт по порядку.</li>
+  <li data-n="3"><b>Погода</b> подтягивается сама по району и дате (температура днём, ясно/пасмурно, максимум за 10 дней). Если интернета нет или дата в будущем — впишите руками.</li>
+  <li data-n="4"><b>Изоляция</b> — случайные значения 782–809 МОм, заземление всегда 25/26/25. Кнопка «🎲 другие» — переиграть.</li>
+ </ol>
+ <div class="ok">Подпись начальника (Усубалиев) ставится в протокол сама, на строку «2.____ Начальник» обоих листов.</div>
+</section>
+
+<section id="s5"><h2><span class="n">5</span>Проверка перед печатью</h2>
+ <p>Пролистайте листы справа и проверьте:</p>
+ <ul class="check">
+  <li>☐ ФИО заказчика — в именительном падеже, мужчина/женщина верно.</li>
+  <li>☐ № ТУ и дата совпадают с бумагой.</li>
+  <li>☐ ВЛ или РУ — как в ТУ.</li>
+  <li>☐ Марка, сечение и длина кабеля — одинаковые на листе 5, листе 11 и в протоколе.</li>
+  <li>☐ Номер протокола не занят (нет жёлтого предупреждения).</li>
+  <li>☐ «Кем выданы» — ЧуПЭС или БиПЭС (см. п. 9).</li>
+ </ul>
+</section>
+
+<section id="s6"><h2><span class="n">6</span>PDF и печать</h2>
+ <h3>Сохранить PDF</h3>
+ <p>Нажмите <b>PDF проекта</b> или <b>PDF протокола</b>. Откроется окно печати браузера — выставьте так:</p>
+ <div class="dlg"><div class="hd">Окно печати (Chrome)</div>
+  <div class="row">Принтер<span class="v">Сохранить как PDF</span></div>
+  <div class="row">Страницы<span class="v">Все</span></div>
+  <div class="row">Поля<span class="v">Нет</span></div>
+  <div class="row">Масштаб<span class="v">По умолчанию (100 %)</span></div>
+  <div class="row">Фоновая графика<span class="v">✓ включена</span></div>
+ </div>
+ <p>Имя файла подставится само: «3-х фазный жилой дом Иванов А.Б. … .pdf» и «Протокол Иванов А.Б..pdf».</p>
+ <h3>Печать на принтер</h3>
+ <p><b>Печать (с конца)</b> — в том же окне выберите принтер <b>Epson L3250</b>, поля «Нет». Сначала выйдет проект с 12-го листа по 1-й, затем протокол со 2-го по 1-й — стопка ляжет по порядку.</p>
+ <div class="tip">На телефоне: кнопка откроет системное окно печати — там «Печать» на принтер или «Поделиться → Сохранить в Файлы» для PDF.</div>
+</section>
+
+<section id="s7"><h2><span class="n">7</span>Если ТУ уже выдавался</h2>
+ <figure><a href="help/dup.png" target="_blank"><img src="help/dup.png" alt="Предупреждение о повторном ТУ"></a></figure>
+ <ol class="marks">
+  <li data-n="1">Если такой № ТУ уже есть в журнале — появится <b>жёлтое предупреждение</b>. Номер протокола берётся из старой выдачи, новый номер не тратится. Повторно такой протокол <b>не выдавать</b>; «Открыть запись из журнала» — открыть ту выдачу.</li>
+ </ol>
+</section>
+
+<section id="s8"><h2><span class="n">8</span>Журнал</h2>
+ <figure><a href="help/journal.png" target="_blank"><img src="help/journal.png" alt="Журнал выданных протоколов"></a></figure>
+ <ol class="marks">
+  <li data-n="1">Поиск — по фамилии, адресу, № ТУ или № протокола.</li>
+  <li data-n="2">Запись: номер протокола, заказчик, дата, ТУ, кабель. Нажмите — откроется с теми же номерами (можно перепечатать).</li>
+  <li data-n="3"><b>Скачать журнал</b> — файл-копия. <b>Загрузить журнал</b> — добавить записи из такого файла (например, присланного).</li>
+  <li data-n="4">Вкладка журнала, цифра — количество записей.</li>
+ </ol>
+ <div class="warn"><b>Важно:</b> журнал хранится в браузере у каждого свой. Если ТУ оформляют двое — перед выдачей сверьте последний номер или обменяйтесь файлом журнала (Скачать → отправить → Загрузить), иначе номера протоколов могут совпасть.</div>
+</section>
+
+<section id="s9"><h2><span class="n">9</span>Постоянные данные (БиПЭС)</h2>
+ <figure><a href="help/consts.png" target="_blank"><img src="help/consts.png" alt="Постоянные данные"></a></figure>
+ <ol class="marks">
+  <li data-n="1">Внизу формы — «Постоянные данные»: директор, лицензия, прибор, инженер ЭТЛ. Обычно не трогаются.</li>
+  <li data-n="2"><b>Кем выданы ТУ</b> — по умолчанию «ОАО НЭСК ЧуПЭС». Для ТУ Аламудунского района (БиПЭС) выберите «ОАО НЭСК БиПЭС». Значение запоминается — после БиПЭС не забудьте вернуть ЧуПЭС.</li>
+ </ol>
+</section>
+
+<section id="s10"><h2><span class="n">10</span>С телефона</h2>
+ <p>Всё то же самое, только разделено на три вкладки внизу.</p>
+ <div class="phones">
+  <figure><a href="help/m-form.png" target="_blank"><img src="help/m-form.png" alt="Телефон: форма"></a><figcaption>Данные</figcaption></figure>
+  <figure><a href="help/m-sheets.png" target="_blank"><img src="help/m-sheets.png" alt="Телефон: листы"></a><figcaption>Листы</figcaption></figure>
+  <figure><a href="help/m-jour.png" target="_blank"><img src="help/m-jour.png" alt="Телефон: журнал"></a><figcaption>Журнал</figcaption></figure>
+ </div>
+ <p><b>Данные</b> (картинка слева):</p>
+ <ol class="marks">
+  <li data-n="1">Нижняя панель: <b>Данные</b> — форма, <b>Листы</b> — посмотреть и напечатать, <b>Журнал</b>.</li>
+  <li data-n="2"><b>Новый ТУ</b> и <b>Записать в журнал</b> всегда внизу.</li>
+  <li data-n="3">Голубые поля — заполнились сами (как на компьютере).</li>
+ </ol>
+ <p><b>Листы</b> (в середине):</p>
+ <ol class="marks">
+  <li data-n="1">Масштаб: «−» / «+». Удобнее — <b>раздвинуть двумя пальцами</b> или <b>дважды тапнуть</b> по листу (ещё раз — обратно).</li>
+  <li data-n="2">Внизу: какие листы показать, PDF и печать.</li>
+ </ol>
+ <p><b>Журнал</b> (справа): нажмите на запись, чтобы открыть её.</p>
+</section>
+
+<section id="s11"><h2><span class="n">11</span>Частые вопросы</h2>
+ <h3>Поле было голубым, я его исправил — оно стало белым. Это нормально?</h3>
+ <p>Да. Белое — значит, вписано вручную и программа его больше не пересчитывает. «↺ авто» над полем вернёт расчёт.</p>
+ <h3>Сайт выглядит по-старому после обновления</h3>
+ <p>Обновите страницу: на компьютере <kbd>⌘</kbd><kbd>⇧</kbd><kbd>R</kbd>, на телефоне закройте вкладку и откройте заново.</p>
+ <h3>Погода не подтянулась</h3>
+ <p>Нужен интернет. Для будущих дат данных нет — впишите температуру и «ясно/пасмурно» вручную.</p>
+ <h3>Сменили телефон / почистили браузер</h3>
+ <p>Код спросят снова, а журнал будет пустым — загрузите сохранённый файл журнала («Загрузить журнал»). Поэтому время от времени нажимайте «Скачать журнал».</p>
+ <h3>Нужна ситуационная схема</h3>
+ <p>Это отдельный инструмент — <a href="schemes.html">Редактор схем</a> (лучше с компьютера).</p>
+</section>
+</main>
+</body></html>
