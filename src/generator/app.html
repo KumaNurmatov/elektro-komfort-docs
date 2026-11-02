@@ -64,7 +64,13 @@ details .in{padding:0 10px 10px}
 #bar .seg button.on{background:#dfe3ea;color:#1c2128}
 #bar .sp{flex:1}
 #bar button.out{background:#fff}
-#sheets{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;align-items:center;gap:14px}
+#view{flex:1;position:relative;min-height:0;display:flex}
+#sheets{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;align-items:flex-start;gap:14px;touch-action:pan-x pan-y}
+#sheets>.grp{margin-inline:auto}
+#zp{position:absolute;top:12px;right:16px;display:flex;gap:2px;background:rgba(28,33,40,.82);border-radius:10px;padding:3px;z-index:15;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#zp button{background:transparent;border:0;color:#fff;font-weight:600;min-width:36px;padding:6px 8px;border-radius:7px}
+#zp button:hover{background:rgba(255,255,255,.15);filter:none}
+#zp #zLbl{min-width:58px;font-variant-numeric:tabular-nums;font-weight:500}
 .grp{display:flex;flex-direction:column;align-items:center;gap:14px}
 .ghead{color:#dfe3ea;font-size:12px;align-self:stretch;text-align:center;letter-spacing:.04em}
 .page{width:210mm;height:297mm;background:#fff;position:relative;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.35);flex:0 0 auto}
@@ -112,6 +118,8 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
   #bar .sp{display:none}
   #bar>button{flex:1 1 30%;padding:10px 4px;font-size:13px}
   #sheets{padding:10px 10px 190px;gap:10px}
+  #zp{top:10px;right:10px}
+  #zp button{min-width:42px;padding:8px 10px;font-size:16px}
   .grp{gap:10px}
   .pnum{display:none}
   #mnav{display:flex}
@@ -120,7 +128,8 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
   @page{size:A4;margin:0}
   html,body{height:auto;background:#fff}
   #app{display:block;height:auto}
-  #panel,#bar,.pnum,.ghead,#mnav{display:none!important}
+  #panel,#bar,.pnum,.ghead,#mnav,#zp{display:none!important}
+  #view{display:block}
   .grp{zoom:1!important}
   #main{display:block}
   #sheets{padding:0;gap:0;display:block;overflow:visible}
@@ -196,10 +205,11 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
   <button class="out" id="pdfR" title="В окне печати выбрать «Сохранить как PDF»">PDF протокола</button>
   <button class="pri" id="prAll" title="Проект и протокол, каждый с последней страницы">🖨 Печать (с конца)</button>
  </div>
+ <div id="view"><div id="zp"><button id="zOut" title="Отдалить">−</button><button id="zLbl" title="По ширине / 100 %">100 %</button><button id="zIn" title="Приблизить">+</button></div>
  <main id="sheets">
   <div class="grp" id="gP"><div class="ghead">РАБОЧИЙ ПРОЕКТ</div><!--PROJ--></div>
   <div class="grp" id="gR"><div class="ghead">ПРОТОКОЛ ЭТЛ</div><!--PROT--></div>
- </main>
+ </main></div>
 </div>
 </div>
 <nav id="mnav">
@@ -458,7 +468,21 @@ function showTab(t){setM(t==='jour'?'jour':'form',true);document.querySelectorAl
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 /* ----- телефон: нижняя панель и листы по ширине экрана ----- */
 const MOB=matchMedia('screen and (max-width:820px)');
-function fitPages(){const k=MOB.matches?Math.min(1,($('sheets').clientWidth-20)/793.7):1;document.querySelectorAll('#sheets .grp').forEach(g=>g.style.zoom=k);}
+let PZ=1;                        // масштаб листов относительно «по ширине» (телефон) или 100 % (компьютер)
+const baseK=()=>MOB.matches?Math.min(1,($('sheets').clientWidth-20)/793.7):1;
+function fitPages(){const k=baseK()*PZ;document.querySelectorAll('#sheets .grp').forEach(g=>g.style.zoom=k);$('zLbl').textContent=Math.round(k*100)+' %';}
+// масштаб с удержанием точки (cx,cy — экранные координаты) на месте
+function setPZ(v,cx,cy){const sh=$('sheets'),r=sh.getBoundingClientRect();const k0=baseK()*PZ;PZ=Math.min(8/baseK(),Math.max(.25/baseK(),v));
+ const mx=(cx??r.left+r.width/2)-r.left,my=(cy??r.top+r.height/2)-r.top;const px=(sh.scrollLeft+mx)/k0,py=(sh.scrollTop+my)/k0;fitPages();const k1=baseK()*PZ;sh.scrollLeft=px*k1-mx;sh.scrollTop=py*k1-my;}
+$('zIn').onclick=()=>setPZ(PZ*1.25);$('zOut').onclick=()=>setPZ(PZ/1.25);
+$('zLbl').onclick=()=>{const fit=MOB.matches?1:Math.min(1,($('sheets').clientWidth-40)/793.7)/baseK();setPZ(Math.abs(PZ-1)<.01&&!MOB.matches?fit:1);};
+{const sh=$('sheets');let t0=null;
+ sh.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();setPZ(PZ*Math.exp(-e.deltaY*(e.ctrlKey&&!e.metaKey?.01:.002)),e.clientX,e.clientY);},{passive:false});
+ const mid=ts=>[(ts[0].clientX+ts[1].clientX)/2,(ts[0].clientY+ts[1].clientY)/2],dd=ts=>Math.hypot(ts[0].clientX-ts[1].clientX,ts[0].clientY-ts[1].clientY);
+ sh.addEventListener('touchstart',e=>{if(e.touches.length===2){t0={d:dd(e.touches),pz:PZ};e.preventDefault();}},{passive:false});
+ sh.addEventListener('touchmove',e=>{if(t0&&e.touches.length===2){e.preventDefault();const [mx,my]=mid(e.touches);setPZ(t0.pz*dd(e.touches)/t0.d,mx,my);}},{passive:false});
+ sh.addEventListener('touchend',e=>{if(e.touches.length<2)t0=null;});
+ sh.addEventListener('dblclick',e=>{if(!e.target.closest('.page'))return;setPZ(PZ>1.4?1:2.5,e.clientX,e.clientY);});}
 function setM(m,quiet){document.body.dataset.m=m;document.querySelectorAll('#mnav button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
  if(quiet)return;if(m==='sheets'){fitPages();placeSign();$('sheets').scrollTop=0;}else showTab(m==='jour'?'jour':'form');}
 document.querySelectorAll('#mnav button').forEach(b=>b.onclick=()=>setM(b.dataset.m));
@@ -492,6 +516,7 @@ loadJournal();
 const st=store.get("tu_form",null);if(st){F={...F0,...st.F};MAN=new Set(st.MAN||[]);CUR=st.CUR||null;if(CUR&&!J.some(e=>e.id===CUR))CUR=null;}
 recompute();fillForm();renderJournal();
 document.fonts.load('12px ISO').then(()=>document.fonts.ready).then(()=>{mcache.clear();render();});
+fitPages();
 render();
 </script>
 </body></html>
