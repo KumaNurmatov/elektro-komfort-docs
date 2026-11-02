@@ -100,7 +100,6 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
    <fieldset><legend>Из технических условий</legend>
     <div class="g2"><label><span>№ ТУ (исх.)</span><input data-f="tu" placeholder="565/10б"></label>
      <label><span>Дата ТУ</span><input data-f="tud" type="date"></label></div>
-    <label><span>Кем выданы</span><input data-f="org" list="orgs"></label>
     <label><span>Заказчик — как в ТУ («На запрос: …»)</span><input data-f="custRaw" placeholder="Иванова А.Б."></label>
     <label><span>Заказчик в документах (им. падеж)</span><input data-f="cust"></label>
     <div class="hint" id="genderHint"></div>
@@ -182,14 +181,14 @@ const POINTS = {   // точки погоды: райцентры
  "Сокулукский район":[42.86,74.30], "Московский район":[42.83,74.11], "Ысык-Атинский район":[42.89,74.85],
  "Чуйский район":[42.84,75.29], "Кеминский район":[42.79,75.69], "г. Бишкек":[42.87,74.59]};
 const ROMAN = ["","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
-const CONST0 = {phase:"трехфазного",dev:"Нурматов",director:"А. Усубалиев",engineer:"А. Нурматов",lic_num:"04264",lic_date:"06 марта 2012",lic_date2:"06 марта 2012",
+const CONST0 = {org:"ОАО НЭСК ЧуПЭС",phase:"трехфазного",dev:"Нурматов",director:"А. Усубалиев",engineer:"А. Нурматов",lic_num:"04264",lic_date:"06 марта 2012",lic_date2:"06 марта 2012",
  kl:"КЛ-0,4 кВ",cause:"вновь вводимый трехфазный ввод",volt:"0,66",time_off:"3",temp_cable:"5",probe_dist:"5",rz1:"25",rz2:"26",rz3:"25",
  device:"Омметр UNI-T UT501A Зав.№С201056263",inspector:"Э. Женишбеков",chief:"А. Усубалиев"};
-const CONST_LBL = {phase:"Фаза (проект)",dev:"Разработал (штамп)",director:"Директор",engineer:"Инженер-проектировщик",lic_num:"Лицензия №",lic_date:"Лицензия от",lic_date2:"Лицензия от (2)",
+const CONST_LBL = {org:"Кем выданы ТУ",phase:"Фаза (проект)",dev:"Разработал (штамп)",director:"Директор",engineer:"Инженер-проектировщик",lic_num:"Лицензия №",lic_date:"Лицензия от",lic_date2:"Лицензия от (2)",
  kl:"Линия (протокол)",cause:"Причина испытаний",volt:"Номинальное напряжение",time_off:"Время с отключения, мин",temp_cable:"Температура кабеля",probe_dist:"Расстояние до зонда",
  rz1:"Заземление 1, Ом",rz2:"Заземление 2, Ом",rz3:"Заземление 3, Ом",device:"Испытательная аппаратура",inspector:"Проверку производил",chief:"Начальник"};
-const P_CONST = ["phase","dev","director","engineer","lic_num","lic_date","lic_date2"];
-const F0 = {tu:"",tud:"",org:"ОАО НЭСК ЧуПЭС",custRaw:"",cust:"",obj:"Жилой дом",addr:"",dist:"Панфиловский район",kw:"10",conn:"ВЛ",tp:"",
+const P_CONST = ["org","phase","dev","director","engineer","lic_num","lic_date","lic_date2"];
+const F0 = {tu:"",tud:"",org:"",custRaw:"",cust:"",obj:"Жилой дом",addr:"",dist:"Панфиловский район",kw:"10",conn:"ВЛ",tp:"",
  cable:"АВВГ",sect:"4х16",len:"",prDate:"",numK:"",prObj:"",prAddr:"",tAir:"",sky:"ясно",w10:"",rA1:"",rA2:"",rB1:"",rB2:"",rC1:"",rC2:"",amp1:"",amp2:"",amp3:""};
 // поле → группа «авто»
 const AUTO = {cust:"cust",prDate:"prDate",numK:"numK",prObj:"prObj",prAddr:"prAddr",len:"len",tAir:"wx",sky:"wx",w10:"wx",
@@ -258,7 +257,7 @@ function derive(){
  const y=(F.tud||"").slice(0,4)||String(new Date().getFullYear());
  const ru=F.conn==="РУ";
  const VP={...PDEF};P_CONST.forEach(k=>VP[k]=CONST[k]);
- Object.assign(VP,{object:`${F.obj} ${F.cust}`.trim(),addr:F.addr,district:F.dist,order:F.tu,tu_num:F.tu,tu_date:dmy(F.tud),year:y,tu_org:F.org,
+ Object.assign(VP,{object:`${F.obj} ${F.cust}`.trim(),addr:F.addr,district:F.dist,order:F.tu,tu_num:F.tu,tu_date:dmy(F.tud),year:y,tu_org:F.org||CONST.org,
   power:words(F.kw),line:ru?"кабельной линией 0,4 от РУ-0,4 кВ":"кабельной линией 0,4 от ВЛ-0,4 кВ",tap:ru?"от РУ-0,4 кВ ТП":"от опоры ВЛ-0,4 кВ",tp:F.tp,
   cable:F.cable,sect:`(${F.sect}) мм²`,len_plan:F.len,len_spec:F.len,amp1:F.amp1,amp2:F.amp2,amp3:F.amp3});
  const pd=F.prDate||"";const VR={...RDEF};for(const k in CONST)if(!P_CONST.includes(k)||k==="phase")VR[k]=CONST[k];
@@ -362,12 +361,12 @@ function fillForm(){
  renderNotes();renderConsts();}
 function renderNotes(){const n=$('notes');const dup=findDup();let h="";
  if(dup)h+=`<div class="note warn"><b>Этот ТУ уже выдавался.</b> № ТУ ${dup.F.tu}, ${dup.F.cust}, протокол № ${dup.F.numK}/${+dup.F.numK+1} от ${dmy(dup.F.prDate)}. Номер взят оттуда — повторно не выдавать.<br><button class="sm" id="openDup">Открыть запись из журнала</button></div>`;
- if(CUR){const e=J.find(x=>x.id===CUR);if(e)h+=`<div class="note ok">Открыто из журнала: <b>${e.F.cust}</b>, протокол № ${e.F.numK}. Изменения сохранятся в эту же запись.</div>`;}
+ if(CUR){const e=J.find(x=>x.id===CUR);if(e)h+=`<div class="note ok">Открыто из журнала: <b>${e.F.cust}</b>, протокол № ${e.F.numK}.${F.org&&F.org!==CONST.org?` ТУ выданы: ${F.org}.`:""} Изменения сохранятся в эту же запись.</div>`;}
  const miss=[["tu","№ ТУ"],["tud","дата ТУ"],["custRaw","заказчик"],["addr","адрес"],["tp","точка подключения"]].filter(([k])=>!F[k]).map(x=>x[1]);
  if(miss.length&&(F.tu||F.custRaw||F.addr))h+=`<div class="note warn">Не заполнено: ${miss.join(", ")}.</div>`;
  n.innerHTML=h;const b=$('openDup');if(b)b.onclick=()=>openEntry(dup.id);}
 function renderConsts(){const box=$('consts');if(box.dataset.ok)return;box.dataset.ok=1;
- box.innerHTML=Object.keys(CONST0).map(k=>`<label><span>${CONST_LBL[k]}</span><input data-c="${k}" value="${String(CONST[k]).replace(/"/g,'&quot;')}"></label>`).join("")+`<label><span>Подпись начальника (PNG, прозрачный фон)</span></label><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="sm" id="sLoad" type="button">${store.get("tu_sign",null)?"Заменить подпись…":"Загрузить подпись…"}</button>${store.get("tu_sign",null)?`<button class="sm" id="sDel" type="button">Убрать</button>`:""}<button class="sm" id="cReset" type="button">Вернуть как было</button></div><input type="file" id="fSign" accept="image/png" hidden>`;
+ box.innerHTML=Object.keys(CONST0).map(k=>`<label><span>${CONST_LBL[k]}</span><input data-c="${k}"${k==="org"?' list="orgs"':""} value="${String(CONST[k]).replace(/"/g,'&quot;')}"></label>`).join("")+`<label><span>Подпись начальника (PNG, прозрачный фон)</span></label><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="sm" id="sLoad" type="button">${store.get("tu_sign",null)?"Заменить подпись…":"Загрузить подпись…"}</button>${store.get("tu_sign",null)?`<button class="sm" id="sDel" type="button">Убрать</button>`:""}<button class="sm" id="cReset" type="button">Вернуть как было</button></div><input type="file" id="fSign" accept="image/png" hidden>`;
  box.querySelectorAll('[data-c]').forEach(i=>i.oninput=()=>{CONST[i.dataset.c]=i.value;store.set("tu_const",CONST);render();});
  $('sLoad').onclick=()=>$('fSign').click();
  $('fSign').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{store.set("tu_sign",rd.result);delete box.dataset.ok;renderConsts();render();};rd.readAsDataURL(f);};
@@ -383,7 +382,7 @@ $('isoDice').onclick=()=>{const r=Math.random;for(const ph of["A","B","C"]){cons
 $('wxBtn').onclick=()=>wantWx(true);
 
 /* ================= журнал ================= */
-function jEntry(){return {id:CUR||("e"+Date.now().toString(36)),F:{...F},MAN:[...MAN],saved:new Date().toISOString()};}
+function jEntry(){return {id:CUR||("e"+Date.now().toString(36)),F:{...F,org:F.org||CONST.org},MAN:[...MAN],saved:new Date().toISOString()};}
 function toJournal(silent){
  if(!F.cust||!F.tu||!F.numK){if(!silent)alert("Заполните хотя бы № ТУ, заказчика и номер протокола.");return false;}
  const dup=findDup();
