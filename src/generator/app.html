@@ -29,9 +29,9 @@ input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px;border
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .g2>label,.g3>label{margin:6px 0}
-.iso{display:grid;grid-template-columns:28px 1fr 1fr;gap:4px 6px;align-items:center;font-size:12px}
-.iso b{font-weight:600;color:#555}
-.iso .h{font-size:11px;color:#777}
+.isogrid{display:grid;grid-template-columns:28px 1fr 1fr;gap:4px 6px;align-items:center;font-size:12px}
+.isogrid b{font-weight:600;color:#555}
+.isogrid .h{font-size:11px;color:#777}
 button{padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font:600 12.5px inherit;cursor:pointer;color:var(--ink)}
 button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
 button.sm{padding:4px 8px;font-size:11.5px;font-weight:500}
@@ -127,7 +127,7 @@ text{white-space:pre;font-family:ISO;font-style:oblique 15deg}
      <label><span>Небо</span><select data-f="sky"><option>ясно</option><option>пасмурно</option></select></label>
      <label><span>Макс. за 10 дн.</span><input data-f="w10" inputmode="numeric"></label></div>
     <div class="wxs" id="wxStatus"></div><button class="sm" id="wxBtn" type="button">Подтянуть погоду ещё раз</button>
-    <div style="margin-top:10px" class="iso"><span></span><span class="h">до испытания</span><span class="h">после</span>
+    <div style="margin-top:10px" class="isogrid"><span></span><span class="h">до испытания</span><span class="h">после</span>
      <b>A</b><input data-f="rA1"><input data-f="rA2"><b>B</b><input data-f="rB1"><input data-f="rB2"><b>C</b><input data-f="rC1"><input data-f="rC2"></div>
     <div class="hint">Изоляция 782–809 МОм, заземление 25/26/25. <button class="sm" id="isoDice" type="button">🎲 другие</button></div>
    </fieldset>
