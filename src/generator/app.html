@@ -367,11 +367,18 @@ function drawOne(g,d,V){const s=subst(d.tpl,V);let sz=d.sz,ls=LS(sz);const w=wid
  const t=document.createElementNS(SVGNS,'text');t.setAttribute('x',d.x);t.setAttribute('y',d.y);t.setAttribute('font-size',+sz.toFixed(3));t.setAttribute('fill','#000');
  t.setAttribute('letter-spacing',+ls.toFixed(4));if(d.a&&d.a!=='start')t.setAttribute('text-anchor',d.a);
  if(d.b){t.setAttribute('stroke','#000');t.setAttribute('stroke-width',d.b);t.setAttribute('paint-order','stroke');}t.textContent=s;g.appendChild(t);}
+function drawStack(g,d,V){let y=d.y;   // титул: длинная строка переносится, а не мельчит; остальные строки сдвигаются ниже
+ for(const L of d.lines){const words=subst(L.tpl,V).split(/\s+/).filter(Boolean),out=[];let cur='';
+  for(const w of words){const c=cur?cur+' '+w:w;if(cur&&width(c,L.sz,LS(L.sz))>d.mw){out.push(cur);cur=w;}else cur=c;}if(cur)out.push(cur);
+  for(const t of out){let sz=L.sz;const wd=width(t,sz,LS(sz));if(wd>d.mw)sz*=d.mw/wd;
+   const e=document.createElementNS(SVGNS,'text');e.setAttribute('x',d.x);e.setAttribute('y',y);e.setAttribute('font-size',+sz.toFixed(3));e.setAttribute('fill','#000');
+   e.setAttribute('letter-spacing',+LS(sz).toFixed(4));e.setAttribute('text-anchor','middle');if(L.b){e.setAttribute('stroke','#000');e.setAttribute('stroke-width',L.b);e.setAttribute('paint-order','stroke');}
+   e.textContent=t;g.appendChild(e);y+=d.dy;}}}
 const groups={};document.querySelectorAll('g.dy').forEach(g=>groups[g.dataset.p]=g);
 function render(){const {VP,VR}=derive();
  for(const k in groups)groups[k].textContent='';
  for(const d of DYN){const g=groups[d.p];if(!g)continue;const V=d.s==='r'?VR:VP;
-  if(d.k==='one')drawOne(g,d,V);else if(d.k==='stamp')drawStamp(g,d,V);else if(d.k==='flow')drawFlow(g,d,V);}
+  if(d.k==='one')drawOne(g,d,V);else if(d.k==='stamp')drawStamp(g,d,V);else if(d.k==='flow')drawFlow(g,d,V);else if(d.k==='stack')drawStack(g,d,V);}
  placeSign();}
 // подпись Усубалиева на строке «2.____ Начальник»: линия видна сквозь прозрачный фон
 function placeSign(){
